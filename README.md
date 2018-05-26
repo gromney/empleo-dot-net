@@ -1,59 +1,62 @@
 empleo-dot-net
 ==============
+[![Build status](https://ci.appveyor.com/api/projects/status/lmek7cwf3g8a2gk3/branch/master?svg=true)](https://ci.appveyor.com/project/amhed/empleo-dot-net/branch/master)
 
-### ¿Qué es esto?
+### What is this ?
 
-Es una iniciativa de Developers.DO y C#.DO  de crear un proyecto en github que sirva como "aprendizaje de la vida real" para quienes quieren aprender ASP.NET MVC.
+The porpuse of this project is to bring a "real-in-production project" experience for all developers interesting in learning ASP.Net MVC 5 and Xamarin.
 
-* Cada 1 o 2 semanas crearemos un Hangout para explicar conceptos relacionados al desarrollo del proyecto. 
-* El hangout será público, anunciaremos el URL con tiempo, y publicaremos un evento en Facebook para recordar a los interesados.
-* Durante el hangout, no todos pueden participar en el video (hay un límite de 10 personas). Pero todos pueden colaborar en el widget de preguntas y respuestas.
-* Durante las sesiones interactivas, todos están invitados a hacer preguntas en el chat. El propósito no es dar una cátedra, sino programar algo real y que los participantes aclaren dudas. 
-* Luego de cada sesión se definirán Issues(feature nuevos, bugs, mejoras, etc.) para que todo el que quiera participar lo pueda hacer. 
+This project is here thanks to the initiative of Developers.do and [C#.DO](https://www.facebook.com/groups/csharp.do/)
 
-### Como Participo?
+* Every now and then (mostly every 1 or 2 week) we'll have some virtual meetings ([Hangout](https://hangouts.google.com) or [Zoom](https://zoom.us)) to talk about any particular topic of
+the project.
+* The virtual meetings are commonly public, we schedule them and share the URL in the [Developers.do facebook group](https://www.facebook.com/groups/devdominicanos) and [Emplea.do's official twitter](https://twitter.com/emplea_do)
+* During the meeting all viwers can bring their ideas, opinions and suggestions but bear in mind that they will be challenged so be ready to defend them
+* All meetings are uploaded to [Youtube](http://youtube.com/c/Streamelopers) and added to [a playlist](https://www.youtube.com/playlist?list=PLW-4dWdTuQryzhz1YWfb-JLKmah1f5l1k)
 
-Todo el conocimiento y decisiones que surgen a partir de discusiones se estará persistiendo en el wiki. Hay un enlace disponible en el menú del lado derecho aquí mismo en Github. 
 
-* Comienza revisando los [recursos sugeridos](https://github.com/developersdo/empleo-dot-net/wiki/Lista-de-Recursos-de-Aprendizaje)
-* Mira la lista de [sesiones previas en Google Hangouts](https://github.com/developersdo/empleo-dot-net/wiki/Sesiones-de-Trabajo-Previas)
-* Entra al [chat del grupo si tienes preguntas puntuales](https://devsdo.hipchat.com/invite/117666/9247d052e13262bf1488993e2d04b259) (Si ya tienes una cuenta en hipchat, [entra aquí como invitado](http://www.hipchat.com/g0PQNEPIJ)) 
-* Si quieres colaborar puedes comenzar un [Pull Request](https://help.github.com/articles/using-pull-requests)
+### How can I collaborate
 
-Tenemos un chat en Gitter: 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/developersdo/empleo-dot-net?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+If you want to contribute to the project, please checkout the [contributing guidelines](https://github.com/developersdo/empleo-dot-net/blob/develop/CONTRIBUTING.md)
 
 ## Roadmap
 
-Pensamos dividir el desarrollo en tres etapas que permitan que participen personas con todo tipo de background en desarrollo:
+### Scope
+The scope of the project overall, looking at it as a platform is:
+- We will only focus on Tech jobs (from techies to techies)
+- Worldwide localization of said jobs, someone from DR should be able to eventually find a job in Spain or Argentina for example
+- Easiness of distinction between onsite and remote jobs
+- Posting should be simple, searching should be easy
 
-#### Etapa 1 - Get it running
+All issues should fall into this scope, if an issue you propose is out of the scope then it will probably not be done but write it anyways, everything is open to conversation.
 
-* Conceptos de git para desarrollo en equipo: forking, pull requests, merging, conflict resolution, etc
-* Conceptos básicos de ASP.NET MVC
-* Definición de historias de uso, ¿Qué debe lograr la aplicación?
-* Definición de estructura básica MVC
-* Entity Framework Code-First
-* Viewmodels y renderización de vistas
-* Adición de layer de seguridad
+### Stage 1 - Get it running
 
-#### Etapa 2 - Refactorings
+* Basics concepts of [git](https://try.github.io/levels/1/challenges/1) for team development, forking, pull request and others.
+* Basics concepts of ASP.NET MVC.
+* Use Case definitions (What should do the app?).
+* Basics MVC structure.
+* Entity Framework [Code-First](http://www.entityframeworktutorial.net/code-first/what-is-code-first.aspx)
+* Viewmodals and Views Rendering
+* Security Layer
 
+### State 2 - Refactorings
+
+* [Design Patterns](https://sourcemaking.com/design_patterns).
 * Service Layer
-* Patrones de diseño: 
-  * Repository
-  * Unit of Work
-* Optimizaciones de HTML/CSS/JS
-* Refactoring javascript
+* Repository
+* Unit of Work
+* HTML/CSS/JS Optimizations
+* JavaScript Refactoring
 * Thin Controllers
 
-#### Etapa 3 - Hacerlo de nuevo
+### Stage 3 - Mobile App
+* [Xamarin](https://www.xamarin.com)
+* [JAD Sessions](https://www.youtube.com/watch?v=TK4NuTZWF1c)
+* API Layer
 
-* Test-Driven-Development
+### Stage 4 - Polish and doing things right
+
+* Test-Driven Development
 * Dependency Injection
 * User Stories that drive tests
-* Rewrite of the complete application 
-
-#### Etapa 4 - Mobile Services
-
-Una vez tengamos todo el codebase de forma organizada y con unit tests, entonces podemos exportar parte de la lógica a una aplicación mobile. El anuncio de [Xamarin Forms](xamarin.com/forms) es excelente noticia para nosotros, pues probablemente quiera decir que desarrollemos el app una sola vez con poco esfuerzo para las tres plataformas (iOS, Android y WP8)

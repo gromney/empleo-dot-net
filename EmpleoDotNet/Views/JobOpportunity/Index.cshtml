@@ -1,9 +1,16 @@
+<<<<<<< HEAD
 ﻿@using EmpleoDotNet.Helpers
 @model IEnumerable<EmpleoDotNet.ViewModel.JobOpportunityIndexViewModel>
+=======
+﻿@using PagedList.Mvc
+@model EmpleoDotNet.ViewModel.JobOpportunitySearchViewModel
+
+>>>>>>> upstream/master
 @{
-    ViewBag.Title = "Listado de vacantes";
+    ViewBag.Title = "Listado de Empleos";
 }
 
+<<<<<<< HEAD
 <div class="row">
     <div class="col-xs-8">
         <h2>Lista de vacantes disponibles</h2>
@@ -63,3 +70,75 @@
 
 
  
+=======
+@* This added here because the partial view _FindsJobPartinal need this JS to work :( *@
+@section scripts {
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places"></script>
+    <script type="text/javascript">
+
+        google.maps.event.addDomListener(window, 'load', function () {
+            var places = new google.maps.places.Autocomplete(document.getElementById('location-input'));
+            google.maps.event.addListener(places, 'place_changed', function () {
+                var place = places.getPlace();
+                if (place) {
+                    var placeId = place.place_id;
+                    var latitude = place.geometry.location.lat();
+                    var longitude = place.geometry.location.lng();
+
+                    $('#location-placeid').val(placeId);
+                    $('#location-latitude').val(latitude);
+                    $('#location-longitude').val(longitude);
+                } else {
+                    $('#location-input').val('');
+                    $('#location-placeid').val('');
+                }
+            });
+        });
+    </script>
+}
+
+@Html.Partial("_FindJobsPartial", Model)
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            @if (Model.Result == null || !Model.Result.Any())
+            {
+                <div>
+                    <h5>No se encontraron resultados para esta búsqueda.</h5>
+                    <hr/>
+                </div>
+            }
+            else
+            {
+                <div>
+                    <h5>@Model.Result.TotalItemCount Empleo(s) disponibles para esta búsqueda.</h5>
+                </div>
+
+                <br />
+
+                @Html.Partial("_JobListPartial", Model.Result)
+
+                <br />
+
+                @*Pagination*@
+                if (Model.Result.PageCount > 1)
+                {
+                   @Html.PagedListPager(Model.Result, page => Url.Action("Index", new
+                    {
+                       Model.Keyword,
+                       Model.SelectedLocationName,
+                       Model.SelectedLocationLatitude,
+                       Model.SelectedLocationLongitude,
+                       Model.SelectedLocationPlaceId,
+                       page,
+                       Model.Result.PageSize,
+                       Model.JobCategory,
+                       Model.IsRemote
+                   }))
+                }
+            }
+        </div>
+    </div>
+</div>
+>>>>>>> upstream/master

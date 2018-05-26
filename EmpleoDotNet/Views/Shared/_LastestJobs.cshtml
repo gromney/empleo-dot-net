@@ -1,6 +1,5 @@
-﻿
-@using EmpleoDotNet.Helpers
-@model List<EmpleoDotNet.Models.JobOpportunity>
+﻿@using EmpleoDotNet.Helpers
+@model List<EmpleoDotNet.Core.Domain.JobOpportunity>
 
 <table class="table">
     <tr>
@@ -12,7 +11,11 @@
     @foreach (var job in Model)
     {
         <tr>
+<<<<<<< HEAD
             <td><p data-utcdate="@job.PublishedDate.Value.ToString("s")"></p></td>
+=======
+            <td>@(job.PublishedDate?.ToString("dd/mm/yyyy"))</td>
+>>>>>>> upstream/master
             <td>
                 <strong>@job.CompanyName</strong> |
                 <a href="@Url.RouteUrl(
@@ -27,8 +30,7 @@
                     </a>
                 </td>
                 <td>@job.Category.ToEnumDescription()</td>
-                <td>@(job.Location != null ? job.Location.Name : "")</td>
+                <td>@(job.Location?.Name ?? "")</td>
             </tr>
     }
 </table>
-

@@ -1,5 +1,5 @@
-﻿using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
+using EmpleoDotNet.Helpers;
 
 namespace EmpleoDotNet
 {
@@ -7,7 +7,8 @@ namespace EmpleoDotNet
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-            filters.Add(new HandleErrorAttribute());
+            filters.Add(new Elmah.Contrib.Mvc.ElmahHandleErrorAttribute());
+            filters.Add(new UnderMaintenanceFilterAttribute());
         }
     }
 }

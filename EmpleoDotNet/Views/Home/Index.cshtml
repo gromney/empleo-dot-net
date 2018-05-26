@@ -1,24 +1,50 @@
-﻿@using EmpleoDotNet.Helpers
-@model List<EmpleoDotNet.Models.JobOpportunity>
+﻿@using EmpleoDotNet.ViewModel
+@model List<EmpleoDotNet.Core.Domain.JobOpportunity>
+
 @{
-    ViewBag.Title = "Home Page";    
+    ViewBag.Title = "";
 }
 
-<div class="jumbotron">
-    <h1>Empleo Dot Net</h1>
-    <p class="lead">
-        Empleo Dot Net es una iniciativa de Developers.DO. Es un portal de empleos creado por la comunidad
-        para aprender técnicas de desarrollo de sistema de código libre usando tecnología de Microsoft
-    </p>
-    <p>
-        <a href="@Url.Action("Index", "JobOpportunity")" class="btn btn-info btn-large">Ver Vacantes</a>
+@* This added here because the partial view _FindsJobPartinal need this JS to work :( *@
+@section scripts {
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places"></script>
+    <script type="text/javascript">
 
-        <a href="https://github.com/developersdo/empleo-dot-net" class="btn btn-default btn-large" target="_blank">
-            Repositorio en Github &raquo;
-        </a>
-    </p>
-</div>
+        google.maps.event.addDomListener(window, 'load', function () {
+            var places = new google.maps.places.Autocomplete(document.getElementById('location-input'));
+            google.maps.event.addListener(places, 'place_changed', function () {
+                var place = places.getPlace();
+                if (place) {
+                    var placeId = place.place_id;
+                    var latitude = place.geometry.location.lat();
+                    var longitude = place.geometry.location.lng();
 
-<div>
-    @Html.Action("LastestsJob", "JobOpportunity")
+                    $('#location-placeid').val(placeId);
+                    $('#location-latitude').val(latitude);
+                    $('#location-longitude').val(longitude);
+                } else {
+                    $('#location-input').val('');
+                    $('#location-placeid').val('');
+                }
+            });
+        });
+    </script>
+}
+
+
+@Html.Partial("_FindJobsPartial", (JobOpportunitySearchViewModel)ViewBag.SearchViewModel)
+
+<div class="container" style="margin-top: -50px;">
+    <section id="jobs">
+        <div class="container">
+            <div class="row">
+                <div>
+                    <h2>Empleos Recientes</h2>
+                </div>
+                @Html.Partial("_JobListPartial", Model)
+                <br />
+                <a class="btn btn-primary" href="@Url.Action("Index", "JobOpportunity")">Mostrar mas empleos</a>
+            </div>
+        </div>
+    </section>
 </div>

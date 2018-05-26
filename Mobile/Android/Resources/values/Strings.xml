@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ApplicationName">Emplea.do</string>
+    <string name="startApp">Iniciar</string>
+    <string name="first_page_description">Encuentra empleos, envía CV, y más</string>
+    <string name="first_page_title">Emplea.do Móvil</string>
+    <string name="second_page_description">Encuentra el empleo de tus sueños</string>
+    <string name="second_page_title">No más milla extra</string>
+    <string name="third_page_description">Únete a la nueva moda de empleos remoto</string>
+    <string name="third_page_title">Trabajos remoto</string>
+    <string name="IsRemote">Remoto</string>
+    <string name="MainPage">Emplea.do</string>
+    <string name="HomePageSearchBarHint">Busca empleo aquí</string>
+    <string name="SearchPageSearchBarHint">Busca una dirección aquí</string>
+    <string name="SearchActivityTitle">Filtrar búsqueda</string>
+    <string name="contentNotFound">La búsqueda no tuvo resultados</string>
+    <string name="contentNotFoundSubtitle">Intenta más tarde</string>
+    <string name="searchNearBy">Búsqueda cerca de mi</string>
+    <string name="searchNearByLoading">Buscando tu locación...</string>
+    <string name="about">Agradecimientos</string>
+    <string name="PullRequestSubmitedContributors">Pull requests: {0}</string>
+    <string name="AboutWhoWeAre">Quienes somos?</string>
+    <string name="AboutWhoWeAreDetail">El propósito de este proyecto es brindar una experiencia real para todos los developers interesado en aprender ASP.Net 5 y Xamarin.</string>
+    <string name="AboutHowToCollaborate">Como puedo colaborar?</string>
+    <string name="AboutHowToCollaborateDetail"><a href="http://www.yahoo.com">Si quieres colaborar en este proyecto, ve a nuestro repositorio y fork it.</a></string>
+    <string name="AboutCollaboratorsTitle">Gracias a la contribuciones de</string>
+</resources>

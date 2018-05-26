@@ -1,24 +1,90 @@
-﻿using System;
-using System.Linq;
+﻿using System.Threading.Tasks;
 using System.Web.Mvc;
-using EmpleoDotNet.Models;
+using EmpleoDotNet.Core.Dto;
+using EmpleoDotNet.Helpers;
+using EmpleoDotNet.AppServices;
+using EmpleoDotNet.Helpers.Alerts;
+using EmpleoDotNet.Services.Social.Twitter;
 using EmpleoDotNet.ViewModel;
+<<<<<<< HEAD
 using EmpleoDotNet.Models.Repositories;
 using System.Collections.Generic;
 using AutoMapper;
+=======
+using EmpleoDotNet.ViewModel.JobOpportunity;
+using reCAPTCHA.MVC;
+using System;
+using System.Net;
+using EmpleoDotNet.Core.Domain;
+using Microsoft.AspNet.Identity;
+>>>>>>> upstream/master
 
 namespace EmpleoDotNet.Controllers
 {
     public class JobOpportunityController : EmpleoDotNetController
     {
-        private readonly JobOpportunityRepository _jobRepository;
-        private readonly LocationRepository _locationRepository;
-
-        public JobOpportunityController()
+        public ActionResult Index(JobOpportunityPagingParameter model)
         {
-            _jobRepository = new JobOpportunityRepository(_database);
-            _locationRepository = new LocationRepository(_database);
+            var viewModel = GetSearchViewModel(model);
+
+            if (!string.IsNullOrWhiteSpace(viewModel.SelectedLocationName) &&
+                string.IsNullOrWhiteSpace(viewModel.SelectedLocationPlaceId))
+            {
+                ModelState.AddModelError("SelectedLocationName", "");
+                return View(viewModel).WithError("Debe seleccionar una Localidad para buscar.");
+            }
+
+            var jobOpportunities = _jobOpportunityService.GetAllJobOpportunitiesPagedByFilters(model);
+
+            viewModel.Result = jobOpportunities;
+
+            return View(viewModel);
         }
+
+        // GET: /jobs/4-jobtitle
+        public ActionResult Detail(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return RedirectToAction(nameof(Index));
+
+            var jobOpportunityId = GetIdFromTitle(id);
+
+            if (jobOpportunityId == 0)
+                return RedirectToAction(nameof(Index));
+
+            var jobOpportunity = _jobOpportunityService.GetJobOpportunityById(jobOpportunityId);
+
+            if (jobOpportunity == null)
+                return View(nameof(Index))
+                    .WithError("La vacante solicitada no existe. Por favor escoge una vacante válida del listado");
+
+            var expectedUrl = UrlHelperExtensions.SeoUrl(jobOpportunityId, jobOpportunity.Title.SanitizeUrl());
+
+            if (!expectedUrl.Equals(id, StringComparison.OrdinalIgnoreCase))
+                return RedirectToActionPermanent(nameof(Detail), new { id = expectedUrl });
+
+            ViewBag.RelatedJobs =
+                _jobOpportunityService.GetCompanyRelatedJobs(jobOpportunityId, jobOpportunity.CompanyName);
+
+            ViewBag.CanLike = !CookieHelper.Exists(GetLikeCookieName(jobOpportunityId));
+
+            var cookieView = $"JobView{jobOpportunity.Id}";
+
+            if (IsJobOpportunityOwner(id) || CookieHelper.Exists(cookieView))
+            {
+                return jobOpportunity.IsHidden
+                    ? View(nameof(Detail), jobOpportunity).WithInfo(Constants.JobDetailWithInfoMessage)
+                    : View(nameof(Detail), jobOpportunity);
+            }
+
+            _jobOpportunityService.UpdateViewCount(jobOpportunity.Id);
+            CookieHelper.Set(cookieView, jobOpportunity.Id.ToString());
+
+            return jobOpportunity.IsHidden
+                ? View(nameof(Detail), jobOpportunity).WithInfo(Constants.JobDetailWithInfoMessage)
+                : View(nameof(Detail), jobOpportunity);
+        }
+<<<<<<< HEAD
         
         // GET: /JobOpportunity/
         public ActionResult Index(int? LocationId)
@@ -33,58 +99,231 @@ namespace EmpleoDotNet.Controllers
             var vm = Mapper.Map<IEnumerable<JobOpportunityIndexViewModel>>(jobList);
             
             return View(vm);
-        }
+=======
 
-        // GET: /JobOpportunity/Detail/4
-         public ActionResult Detail(int? id)
-        {
-            if (!id.HasValue)
-                return RedirectToAction("Index");
+        [HttpGet]
 
-            var vm = _jobRepository.GetJobOpportunityById(id);
-
-            if (vm != null) 
-                return View("Detail", vm);
-            
-            ViewBag.ErrorMessage = 
-                "La vacante solicitada no existe. Por favor escoger una vacante válida del listado";
-            
-            return View("Index");
-        }
-
-        // GET: /JobOpportunity/New
+        [Authorize]
         public ActionResult New()
         {
             var viewModel = new NewJobOpportunityViewModel();
-            viewModel.Locations = _locationRepository.GetAllLocations();
 
-            return View("New", viewModel);
+            return View(viewModel)
+                .WithInfo("Prueba nuestro nuevo proceso guiado de creación de posiciones haciendo <b><a href='" + Url.Action("Wizard") + "'>click aquí</a></b>");
         }
 
-
         [HttpPost, ValidateAntiForgeryToken]
-        public ActionResult New(NewJobOpportunityViewModel job)
+        [ValidateInput(false)]
+        [CaptchaValidator(RequiredMessage = "Por favor confirma que no eres un robot")]
+        [Authorize]
+        public async Task<ActionResult> New(NewJobOpportunityViewModel model, bool captchaValid)
         {
             if (!ModelState.IsValid)
             {
-                job.Locations = _locationRepository.GetAllLocations();
-                ViewBag.ErrorMessage = "Han ocurrido errores de validación que no permiten continuar el proceso";
-                return View(job);
+                return View(model)
+                    .WithError("Han ocurrido errores de validación que no permiten continuar el proceso");
             }
 
-            _locationRepository.Add(new Location {Name = "Las Guaranas"});
-            _jobRepository.Add(job.ToEntity());
+            if (string.IsNullOrWhiteSpace(model.LocationPlaceId))
+            {
+                ModelState.AddModelError(nameof(model.LocationName), "");
+                return View(model).WithError("Debe seleccionar una Localidad.");
+            }
 
-            _uow.SaveChanges();
+            if (!string.IsNullOrWhiteSpace(model.CompanyLogoUrl) && !UrlHelperExtensions.IsImageAvailable(model.CompanyLogoUrl))
+            {
+                return View(model).WithError("La url del logo debe ser a una imagen en formato png o jpg");
+            }
 
-            return RedirectToAction("Index");
+            var jobOpportunity = model.ToEntity();
+            var userId = User.Identity.GetUserId();
+
+            _jobOpportunityService.CreateNewJobOpportunity(jobOpportunity, userId);
+
+            await _twitterService.PostNewJobOpportunity(jobOpportunity, Url).ConfigureAwait(false);
+
+            return RedirectToAction(nameof(Detail), new
+            {
+                id = UrlHelperExtensions.SeoUrl(jobOpportunity.Id, jobOpportunity.Title)
+            });
+>>>>>>> upstream/master
         }
 
-        public ActionResult LastestsJob()
+        [HttpGet]
+        public ActionResult Wizard()
         {
-            var latestJobOpportunities = _jobRepository.GetLatestJobOpporunity(10);
+            var viewModel = new Wizard();
 
-            return PartialView("_LastestJobs", latestJobOpportunities);
+            return View(viewModel);
         }
+
+        [HttpGet]
+        [Authorize]
+        public ActionResult Edit(string title)
+        {
+            var job = GetJobOpportunityFromTitle(title);
+
+            if (!IsJobOpportunityOwner(title))
+                return RedirectToAction("Detail", new { id = title });
+
+            var wizardvm = ViewModel.JobOpportunity.Wizard.FromEntity(job);
+            return View("Wizard", wizardvm);
+        }
+
+        [Authorize]
+        public ActionResult Delete(string title, bool returnPrevious = true)
+        {
+            var jobOpportunity = GetJobOpportunityFromTitle(title);
+            if (IsJobOpportunityOwner(title))
+            {
+                _jobOpportunityService.SoftDeleteJobOpportunity(jobOpportunity);
+            }
+
+            if (Request.UrlReferrer == null || returnPrevious == false)
+            {
+                return RedirectToAction("Index", "Home")
+                        .WithSuccess($"Se ha borrado exitosamente la oportunidad de empleo: {jobOpportunity.Title}");
+            }
+
+            return Redirect(Request.UrlReferrer.ToString())
+                        .WithSuccess($"Se ha borrado exitosamente la oportunidad de empleo: {jobOpportunity.Title}");
+        }
+
+        [HttpPost]
+        public JsonResult ToggleHide(string title)
+        {
+            var jobOpportunity = GetJobOpportunityFromTitle(title);
+            if (IsJobOpportunityOwner(title))
+            {
+                _jobOpportunityService.ToggleHideState(jobOpportunity);
+            }
+
+            return Json(new { isHidden = jobOpportunity.IsHidden });
+
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        [ValidateInput(false)]
+        [CaptchaValidator(RequiredMessage = "Por favor confirma que no eres un robot", ErrorMessage = "El captcha es incorrecto.")]
+        public async Task<ActionResult> Wizard(Wizard model)
+        {
+            if (!ModelState.IsValid)
+                return View(model)
+                    .WithError("Han ocurrido errores de validación que no permiten continuar el proceso");
+
+            var jobOpportunity = model.ToEntity();
+            var jobExists = _jobOpportunityService.JobExists(model.Id);
+
+            if (!jobExists)
+            {
+                _jobOpportunityService.CreateNewJobOpportunity(jobOpportunity, User.Identity.GetUserId());
+            }
+            else
+            {
+                _jobOpportunityService.UpdateJobOpportunity(model.Id, model.ToEntity());
+            }
+
+            await _twitterService.PostNewJobOpportunity(jobOpportunity, Url);
+
+            return RedirectToAction(nameof(Detail), new
+            {
+                id = UrlHelperExtensions.SeoUrl(jobOpportunity.Id, jobOpportunity.Title),
+                fromWizard = 1
+            });
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize]
+        public JsonResult Like(int jobOpportunityId, bool like)
+        {
+            var cookieName = GetLikeCookieName(jobOpportunityId);
+            
+            if (CookieHelper.Exists(cookieName))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { error = true, message = "Ya has votado por este empleo." });
+            }
+                     
+            _jobOpportunityService.CreateNewReaction(jobOpportunityId, like);
+
+            CookieHelper.Set(cookieName, jobOpportunityId.ToString());
+
+            var jobOpportunity = _jobOpportunityService.GetJobOpportunityById(jobOpportunityId);
+            return jobOpportunity == null 
+                ? Json(new { error = true, message = "No se encuentra empleo con el id indicado" }) 
+                : Json(new { error = false, data = new 
+                {
+                    jobOpportunity.Likes,
+                    jobOpportunity.DisLikes
+                }});
+        }
+
+        /// <summary>
+        /// Transform JobOpportunityPagingParameter into JobOpportunitySearchViewModel with Locations
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        private JobOpportunitySearchViewModel GetSearchViewModel(JobOpportunityPagingParameter model)
+        {
+            if (string.IsNullOrWhiteSpace(model.SelectedLocationName))
+            {
+                model.SelectedLocationLatitude = string.Empty;
+                model.SelectedLocationLongitude = string.Empty;
+                model.SelectedLocationPlaceId = string.Empty;
+            }
+
+            var viewModel = new JobOpportunitySearchViewModel
+            {
+                SelectedLocationPlaceId = model.SelectedLocationPlaceId,
+                SelectedLocationName = model.SelectedLocationName,
+                SelectedLocationLongitude = model.SelectedLocationLongitude,
+                SelectedLocationLatitude = model.SelectedLocationLatitude,
+                JobCategory = model.JobCategory,
+                Keyword = model.Keyword,
+                IsRemote = model.IsRemote,
+                CategoriesCount = _jobOpportunityService.GetMainJobCategoriesCount(),
+            };
+
+            return viewModel;
+        }
+
+        private static string GetLikeCookieName(int jobOpportunityId)
+        {
+            return $"JobLike{jobOpportunityId}";
+        }
+
+        private static int GetIdFromTitle(string title)
+        {
+            int id;
+            var url = title.Split('-');
+
+            if (string.IsNullOrEmpty(title) || url.Length == 0 || !int.TryParse(url[0], out id))
+                return 0;
+
+            return id;
+        }
+
+        private JobOpportunity GetJobOpportunityFromTitle(string title)
+        {
+            var jobId = GetIdFromTitle(title);
+            return _jobOpportunityService.GetJobOpportunityById(jobId);
+        }
+
+        private bool IsJobOpportunityOwner(string title)
+        {
+            var jobOpportunity = GetJobOpportunityFromTitle(title);
+            var currentUser = User.Identity.GetUserId();
+            return (currentUser != null && jobOpportunity.UserProfile?.UserId == currentUser);
+        }
+
+        public JobOpportunityController(
+            IJobOpportunityService jobOpportunityService,
+            ITwitterService twitterService)
+        {
+            _jobOpportunityService = jobOpportunityService;
+            _twitterService = twitterService;
+        }
+
+        private readonly IJobOpportunityService _jobOpportunityService;
+        private readonly ITwitterService _twitterService;
     }
 }

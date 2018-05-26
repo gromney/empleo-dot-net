@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{E2F64C8E-F63A-4BBC-A45A-985C2D87A481}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Core</RootNamespace>
+    <AssemblyName>Core</AssemblyName>
+    <TargetFrameworkProfile>Profile78</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shared\LandingPage\LandingPageInfo.cs" />
+    <Compile Include="LandingPage\JobItemViewModel.cs" />
+    <Compile Include="Search\SearchResultItem.cs" />
+    <Compile Include="MainPage\CategoriesViewModel.cs" />
+    <Compile Include="Services\IBitmapResizer.cs" />
+    <Compile Include="IValueConverter.cs" />
+    <Compile Include="IContextService.cs" />
+    <Compile Include="IAppInfoService.cs" />
+    <Compile Include="Github\IGithubContributorService.cs" />
+    <Compile Include="Github\GithubUser.cs" />
+    <Compile Include="Github\OctocatContributorService.cs" />
+    <Compile Include="Services\IEmailService.cs" />
+    <Compile Include="IAssetReader.cs" />
+    <Compile Include="CrossPlatformStuff.cs" />
+    <Compile Include="Caching\ICache.cs" />
+    <Compile Include="Keyboard\IKeyboardService.cs" />
+    <Compile Include="Language\ILanguageService.cs" />
+    <Compile Include="Geolocation\IGeolocationService.cs" />
+    <Compile Include="Geolocation\UserLocationChangedEventArgs.cs" />
+    <Compile Include="Geolocation\LocationData.cs" />
+    <Compile Include="MobileConfiguration\IMobileConfigurationManager.cs" />
+    <Compile Include="MobileConfiguration\MobileConfig.cs" />
+    <Compile Include="MobileConfiguration\MobileConfigurationManager.cs" />
+    <Compile Include="XMLReader\IXMLStorage.cs" />
+    <Compile Include="Binding\Bind.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Shared\" />
+    <Folder Include="LandingPage\" />
+    <Folder Include="Search\" />
+    <Folder Include="MainPage\" />
+    <Folder Include="Services\" />
+    <Folder Include="Github\" />
+    <Folder Include="Caching\" />
+    <Folder Include="Keyboard\" />
+    <Folder Include="Language\" />
+    <Folder Include="Geolocation\" />
+    <Folder Include="MobileConfiguration\" />
+    <Folder Include="XMLReader\" />
+    <Folder Include="Binding\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Net.Http">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Octokit">
+      <HintPath>..\packages\Octokit.0.19.0\lib\portable-net45+wp80+win+wpa81\Octokit.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\portable-net45+wp80+win8+wpa81+dnxcore50\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
